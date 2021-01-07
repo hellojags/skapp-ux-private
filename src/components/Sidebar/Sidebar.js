@@ -1,156 +1,190 @@
-import React, { useState, useEffect } from "react";
-import { Drawer, IconButton, List } from "@material-ui/core";
-import {
-  Home as HomeIcon,
-  NotificationsNone as NotificationsIcon,
-  FormatSize as TypographyIcon,
-  FilterNone as UIElementsIcon,
-  BorderAll as TableIcon,
-  QuestionAnswer as SupportIcon,
-  LibraryBooks as LibraryIcon,
-  HelpOutline as FAQIcon,
-  ArrowBack as ArrowBackIcon,
-} from "@material-ui/icons";
-import { useTheme } from "@material-ui/styles";
-import { withRouter } from "react-router-dom";
-import classNames from "classnames";
+import React from 'react'
+import PerfectScrollbar from 'react-perfect-scrollbar'
+import 'react-perfect-scrollbar/dist/css/styles.css'
+import { makeStyles } from '@material-ui/core/styles'
+import ListSubheader from '@material-ui/core/ListSubheader'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import Collapse from '@material-ui/core/Collapse'
+// Custom Icons Imports
+import { ReactComponent as DashboardIcon } from '../../assets/img/icons/dashboardIcon.svg'
+import { ReactComponent as SubmitAppIcon } from '../../assets/img/icons/submitIcon.svg'
+import { ReactComponent as MyAppIcon } from '../../assets/img/icons/grayMyApps.svg'
+import { ReactComponent as HostingIcon } from '../../assets/img/icons/Cloud, Sync, Synchronize.6.svg'
+import { ReactComponent as DeployIcon } from '../../assets/img/icons/deployIcon.svg'
+import { ReactComponent as FilesIcon } from '../../assets/img/icons/filesIcon.svg'
+import { ReactComponent as DomainIcon } from '../../assets/img/icons/domainIcon.svg'
+import { ReactComponent as StorageIcon } from '../../assets/img/icons/StorageIcon.svg'
+import { ReactComponent as StatsIcon } from '../../assets/img/icons/statsIcon.svg'
+import { ReactComponent as ActivityLogIcon } from '../../assets/img/icons/starOutlinedIcon.svg'
+import { ReactComponent as KnowlBaseIcon } from '../../assets/img/icons/knowledgeBaseIcon.svg'
+import { ReactComponent as ProductUpdateIcon } from '../../assets/img/icons/productUpdateIcon.svg'
+import { ReactComponent as SettingNavLogIcon } from '../../assets/img/icons/settingNavIcon.svg'
+import { ExpandLess, ExpandMore } from '@material-ui/icons'
+// sidebar styles
+import style from '../../assets/jss/sidebar/SidebarStyle'
+import { NavLink } from 'react-router-dom'
+const useStyles = makeStyles(style)
 
-// styles
-import useStyles from "./styles";
+const Sidebar = (props) => {
+    const classes = useStyles()
+    const [open, setOpen] = React.useState(true)
 
-// components
-import SidebarLink from "./components/SidebarLink/SidebarLink";
-import Dot from "./components/Dot";
-
-// context
-import {
-  useLayoutState,
-  useLayoutDispatch,
-  toggleSidebar,
-} from "../../context/LayoutContext";
-
-const structure = [
-  { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
-  {
-    id: 1,
-    label: "Explore App",
-    link: "/app/exploreapp",
-    icon: <TypographyIcon />,
-  },
-  { id: 2, label: "Tables", link: "/app/tables", icon: <TableIcon /> },
-  {
-    id: 3,
-    label: "Notifications",
-    link: "/app/notifications",
-    icon: <NotificationsIcon />,
-  },
-  {
-    id: 4,
-    label: "UI Elements",
-    link: "/app/ui",
-    icon: <UIElementsIcon />,
-    children: [
-      { label: "Icons", link: "/app/ui/icons" },
-      { label: "Charts", link: "/app/ui/charts" },
-      { label: "Maps", link: "/app/ui/maps" },
-    ],
-  },
-  { id: 5, type: "divider" },
-  { id: 6, type: "title", label: "HELP" },
-  { id: 7, label: "Library", link: "", icon: <LibraryIcon /> },
-  { id: 8, label: "Support", link: "", icon: <SupportIcon /> },
-  { id: 9, label: "FAQ", link: "", icon: <FAQIcon /> },
-  { id: 10, type: "divider" },
-  { id: 11, type: "title", label: "PROJECTS" },
-  {
-    id: 12,
-    label: "My recent",
-    link: "",
-    icon: <Dot size="small" color="warning" />,
-  },
-  {
-    id: 13,
-    label: "Starred",
-    link: "",
-    icon: <Dot size="small" color="primary" />,
-  },
-  {
-    id: 14,
-    label: "Background",
-    link: "",
-    icon: <Dot size="small" color="secondary" />,
-  },
-];
-
-function Sidebar({ location }) {
-  var classes = useStyles();
-  var theme = useTheme();
-
-  // global
-  var { isSidebarOpened } = useLayoutState();
-  var layoutDispatch = useLayoutDispatch();
-
-  // local
-  var [isPermanent, setPermanent] = useState(true);
-
-  useEffect(function() {
-    window.addEventListener("resize", handleWindowWidthChange);
-    handleWindowWidthChange();
-    return function cleanup() {
-      window.removeEventListener("resize", handleWindowWidthChange);
-    };
-  });
-
-  return (
-    <Drawer
-      variant={isPermanent ? "permanent" : "temporary"}
-      className={classNames(classes.drawer, {
-        [classes.drawerOpen]: isSidebarOpened,
-        [classes.drawerClose]: !isSidebarOpened,
-      })}
-      classes={{
-        paper: classNames({
-          [classes.drawerOpen]: isSidebarOpened,
-          [classes.drawerClose]: !isSidebarOpened,
-        }),
-      }}
-      open={isSidebarOpened}
-    >
-      <div className={classes.toolbar} />
-      <div className={classes.mobileBackButton}>
-        <IconButton onClick={() => toggleSidebar(layoutDispatch)}>
-          <ArrowBackIcon
-            classes={{
-              root: classNames(classes.headerIcon, classes.headerIconCollapse),
-            }}
-          />
-        </IconButton>
-      </div>
-      <List className={classes.sidebarList}>
-        {structure.map(link => (
-          <SidebarLink
-            key={link.id}
-            location={location}
-            isSidebarOpened={isSidebarOpened}
-            {...link}
-          />
-        ))}
-      </List>
-    </Drawer>
-  );
-
-  // ##################################################################
-  function handleWindowWidthChange() {
-    var windowWidth = window.innerWidth;
-    var breakpointWidth = theme.breakpoints.values.md;
-    var isSmallScreen = windowWidth < breakpointWidth;
-
-    if (isSmallScreen && isPermanent) {
-      setPermanent(false);
-    } else if (!isSmallScreen && !isPermanent) {
-      setPermanent(true);
+    const handleClick = () => {
+        setOpen(!open)
     }
-  }
+
+    return (
+        <div className={`${classes.sidebar} sidebar`} style={props.style} >
+            <PerfectScrollbar>
+                <List
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                    className={classes.root}
+                >
+                    <NavLink exact to="/" >
+                        <ListItem button>
+                            <ListItemIcon className={classes.listIcon}>
+                                <DashboardIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Dashboard" />
+                        </ListItem>
+                    </NavLink>
+
+                    <NavLink exact to='/apps'>
+                        <ListItem button>
+                            <ListItemIcon className={classes.listIcon}>
+                                <MyAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Explore Apps" />
+                        </ListItem>
+                    </NavLink>
+                    <NavLink exact to='/submitapp'>
+                        <ListItem button>
+                            <ListItemIcon className={classes.listIcon}>
+                                <SubmitAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Submit App" />
+                        </ListItem>
+                    </NavLink>
+                    <NavLink exact to='/installedappps'>
+                        <ListItem button>
+                            <ListItemIcon className={classes.listIcon}>
+                                <MyAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="My Apps" />
+                        </ListItem>
+                    </NavLink>
+                    <NavLink exact to='/hosting'>
+                        <ListItem button onClick={handleClick}>
+                            <ListItemIcon className={classes.listIcon}>
+                                <HostingIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Hosting" />
+                            {open ? <ExpandLess className={classes.dropArrow} /> : <ExpandMore className={classes.dropArrow} />}
+                        </ListItem>
+                    </NavLink>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <List component="div" disablePadding>
+                            <NavLink exact to='/deploysite'>
+                                <ListItem button className={classes.nested}>
+                                    <ListItemIcon className={classes.listIcon}>
+                                        <DeployIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Deploy" />
+                                </ListItem>
+                            </NavLink>
+                            <ListItem button className={classes.nested}>
+                                <ListItemIcon className={classes.listIcon}>
+                                    <FilesIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Files" />
+                            </ListItem>
+                            <NavLink exact to='/nodomain'>
+                                <ListItem button className={classes.nested}>
+                                    <ListItemIcon className={classes.listIcon}>
+                                        <DomainIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Domain" />
+                                </ListItem>
+                            </NavLink>
+                            <NavLink exact to='/storagegateway'>
+
+                                <ListItem button className={classes.nested}>
+                                    <ListItemIcon className={classes.listIcon}>
+                                        <StorageIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Storage" />
+                                </ListItem>
+                            </NavLink>
+                            <ListItem button className={classes.nested}>
+                                <ListItemIcon className={classes.listIcon}>
+                                    <StatsIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Usage Stats" />
+                            </ListItem>
+                            <ListItem button className={classes.nested}>
+                                <ListItemIcon className={classes.listIcon}>
+                                    <ActivityLogIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Activity Log" />
+                            </ListItem>
+                        </List>
+                    </Collapse>
+                </List>
+                {/* Other Information section */}
+                <List
+                    subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                            Other Information
+                </ListSubheader>
+                    }
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                    className={classes.root}
+                >
+                    <ListItem button>
+                        <ListItemIcon className={classes.listIcon}>
+                            <KnowlBaseIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Knowledge Base" />
+                    </ListItem>
+
+                    <ListItem button>
+                        <ListItemIcon className={classes.listIcon}>
+                            <ProductUpdateIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Product Updates" />
+                    </ListItem>
+
+                </List>
+                {/* Settings section */}
+                <List
+                    subheader={
+                        <ListSubheader component="div" id="nested-list-subheader">
+                            Settings
+                </ListSubheader>
+                    }
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                    className={classes.root}
+                >
+                    <ListItem button>
+                        <ListItemIcon className={classes.listIcon}>
+                            <SettingNavLogIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Settings" />
+                    </ListItem>
+                </List>
+                <div className={classes.promoCard}>
+                    <h3 className={classes.promoTitle}>Promo Title</h3>
+                    <p className={classes.promoText}>Explore our marketing solutions</p>
+                </div>
+            </PerfectScrollbar>
+        </div>
+    )
 }
 
-export default withRouter(Sidebar);
+export default Sidebar
