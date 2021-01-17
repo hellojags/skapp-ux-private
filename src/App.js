@@ -23,77 +23,76 @@ import {
 } from "react-router-dom"
 import AppDetailsPage from './components/AppDetails/AppDetailsPage'
 import DeploySite from './components/Hosting/DeploySite'
+import store from "./redux/store";
+import { Provider } from "react-redux";
 
 function App() {
   return (
-    <Router>
-      <ThemeProvider theme={skappTheme}>
-        <div className="App">
+    <Provider store={store}>
+      <Router>
+        <ThemeProvider theme={skappTheme}>
+          <div className="App">
+            <Navbar />
+            <section className="main-content">
+              <aside className="app-sidebar">
+                <Sidebar />
+              </aside>
 
-          <Navbar />
-          <section className="main-content">
-
-            <aside className="app-sidebar">
-              <Sidebar />
-            </aside>
-
-            <main className="app-content">
-              <Switch>
-
-                <Route exact path='/appdetail'>
-                  <AppDetailsPage />
-                </Route>
-                <Route exact path='/submitapp'>
-                  <SubmitApp />
-                </Route>
-                <Route exact path='/error'>
-                  <Error />
-                </Route>
-                <Route exact path='/noapp'>
-                  <NoApps />
-                </Route>
-                <Route exact path='/installedappps'>
-                  <InstalledApps />
-                </Route>
-                <Route exact path='/hosting'>
-                  <Hosting />
-                </Route>
-                <Route exact path='/submitsite'>
-                  <SubmitNewSite />
-                </Route>
-                <Route exact path='/domains'>
-                  <Domains />
-                </Route>
-                {/* <Route exact path='/addnewdomain'>
+              <main className="app-content">
+                <Switch>
+                  <Route exact path="/appdetail">
+                    <AppDetailsPage />
+                  </Route>
+                  <Route exact path="/submitapp">
+                    <SubmitApp />
+                  </Route>
+                  <Route exact path="/error">
+                    <Error />
+                  </Route>
+                  <Route exact path="/noapp">
+                    <NoApps />
+                  </Route>
+                  <Route exact path="/installedappps">
+                    <InstalledApps />
+                  </Route>
+                  <Route exact path="/hosting">
+                    <Hosting />
+                  </Route>
+                  <Route exact path="/submitsite">
+                    <SubmitNewSite />
+                  </Route>
+                  <Route exact path="/domains">
+                    <Domains />
+                  </Route>
+                  {/* <Route exact path='/addnewdomain'>
                   <AddNewDomain />
                 </Route>
                 <Route exact path='/adddomaintxt'>
                   <AddNewDomainTXT />
                 </Route> */}
-                <Route exact path='/nodomain'>
-                  <NoDomain />
-                </Route>
-                <Route exact path='/storagegateway'>
-                  <StorageGateway />
-                </Route>
-                <Route exact path='/settings'>
-                  <Settings />
-                </Route>
-                <Route exact path='/deploysite'>
-                  <DeploySite />
-                </Route>
-                <Route exact path='/apps'>
-                  <Apps />
-                </Route>
-              </Switch>
-            </main>
-
-          </section>
-
-        </div>
-      </ThemeProvider>
-    </Router>
-  )
+                  <Route exact path="/nodomain">
+                    <NoDomain />
+                  </Route>
+                  <Route exact path="/storagegateway">
+                    <StorageGateway />
+                  </Route>
+                  <Route exact path="/settings">
+                    <Settings />
+                  </Route>
+                  <Route exact path="/deploysite">
+                    <DeploySite />
+                  </Route>
+                  <Route exact path="/apps">
+                    <Apps />
+                  </Route>
+                </Switch>
+              </main>
+            </section>
+          </div>
+        </ThemeProvider>
+      </Router>
+    </Provider>
+  );
 }
 
 export default App

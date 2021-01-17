@@ -44,6 +44,13 @@ const optionsAge = [
   { value: "18", label: "18" },
   { value: "general", label: "general" },
 ];
+
+const appStatus = [
+  { value: "Alpha", label: "Alpha" },
+  { value: "Beta", label: "Beta" },
+  { value: "Live", label: "Live" },
+];
+
 const socialOption = [
   { value: "facebook", label: "facebook" },
   { value: "Reddit", label: "Reddit" },
@@ -246,7 +253,7 @@ const SubmitApp = () => {
                 name="appStatus"
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
-                options={optionsAge}
+                options={appStatus}
                 styles={reactSelectStyles}
               />
             </Box>
