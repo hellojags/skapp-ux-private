@@ -19,10 +19,30 @@ const optionsVersion = [
   { value: "1.01", label: "1.01" },
   { value: "1.02", label: "1.02" },
 ];
+
+const appCatOptions=[
+    {value:"all",label:"all"},
+    {value:"social",label:"social"},
+    {value:"video",label:"video"},
+    {value:"pictures",label:"pictures"},
+    {value:"music",label:"music"},
+    {value:"productivity",label:"productivity"},
+    {value:"utilities",label:"utilities"},
+    {value:"games",label:"games"},
+    {value:"blogs",label:"blogs"},
+    {value:"software",label:"software"},
+    {value:"livestream",label:"livestream"},
+    {value:"books",label:"books"},
+    {value:"marketplace",label:"marketplace"},
+    {value:"finance",label:"finance"},
+    {value:"portal",label:"portal"},
+]
+
 const optionsAge = [
-  { value: "17", label: "17" },
+  { value: "7", label: "7" },
+  { value: "13", label: "13" },
   { value: "18", label: "18" },
-  { value: "19", label: "19" },
+  { value: "general", label: "general" },
 ];
 const socialOption = [
   { value: "facebook", label: "facebook" },
@@ -200,7 +220,7 @@ const SubmitApp = () => {
                 isMulti
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
-                options={optionsAge}
+                options={appCatOptions}
                 styles={reactSelectStyles}
               />
             </Box>
