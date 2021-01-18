@@ -12,6 +12,12 @@ import styles from "../../assets/jss/app-details/SubmitAppStyles";
 // img icon
 import { ReactComponent as ImgIcon } from "../../assets/img/icons/image.svg";
 import { useForm, Controller } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
+import { useDispatch } from "react-redux";
+// importing action
+import { SubmitYourAppAction } from "../../redux/actions/submitYourAppAction";
+import TagsInput from "react-tagsinput";
+import "react-tagsinput/react-tagsinput.css"; // If using WebPack and style-loader.
 
 const useStyles = makeStyles(styles);
 const optionsVersion = [
@@ -20,23 +26,23 @@ const optionsVersion = [
   { value: "1.02", label: "1.02" },
 ];
 
-const appCatOptions=[
-    {value:"all",label:"all"},
-    {value:"social",label:"social"},
-    {value:"video",label:"video"},
-    {value:"pictures",label:"pictures"},
-    {value:"music",label:"music"},
-    {value:"productivity",label:"productivity"},
-    {value:"utilities",label:"utilities"},
-    {value:"games",label:"games"},
-    {value:"blogs",label:"blogs"},
-    {value:"software",label:"software"},
-    {value:"livestream",label:"livestream"},
-    {value:"books",label:"books"},
-    {value:"marketplace",label:"marketplace"},
-    {value:"finance",label:"finance"},
-    {value:"portal",label:"portal"},
-]
+const appCatOptions = [
+  { value: "all", label: "all" },
+  { value: "social", label: "social" },
+  { value: "video", label: "video" },
+  { value: "pictures", label: "pictures" },
+  { value: "music", label: "music" },
+  { value: "productivity", label: "productivity" },
+  { value: "utilities", label: "utilities" },
+  { value: "games", label: "games" },
+  { value: "blogs", label: "blogs" },
+  { value: "software", label: "software" },
+  { value: "livestream", label: "livestream" },
+  { value: "books", label: "books" },
+  { value: "marketplace", label: "marketplace" },
+  { value: "finance", label: "finance" },
+  { value: "portal", label: "portal" },
+];
 
 const optionsAge = [
   { value: "7", label: "7" },
@@ -88,24 +94,67 @@ const reactSelectStyles = {
     },
   }),
 };
+
+let forImagesPreview = [];
 const SubmitApp = () => {
   const [selectedOption, setSelectedOption] = useState(null);
+  const dispatch = useDispatch();
+
   const [verson, setVersion] = useState("");
+  const [tags, setTags] = useState([]);
   const { register, handleSubmit, control } = useForm();
   const classes = useStyles();
+
+  // state for social links according to format
+  const [firstSocialLinkTitle, setfirstSocialLinkTitle] = useState("");
+  const [secondSocialLinkTitle, setSecondSocialLinkTitle] = useState("");
+  const [thirdSocialLinkTitle, setThirdSocialLinkTitle] = useState("");
+
+  const [firstSocialLink, setfirstSocialLink] = useState("");
+  const [secondSocialLink, setSecondSocialLink] = useState("");
+  const [thirdSocialLink, setThirdSocialLink] = useState("");
 
   const onSubmit = (data) => {
     let obj = {
       $type: "publishedSkapp",
-      id: "SKAPP_ID",
+      id: uuidv4(),
       version: verson,
       ts: "1610328319",
       content: data,
       defaultPath: "index.html or EMPTY",
     };
 
-    console.log("====>", obj);
+    let imagesPrevieObj = {
+      aspectRatio: 0.5625,
+      images: forImagesPreview,
+    };
+    obj.content.category = obj.content.category && obj.content.category.value;
+    obj.content.age = obj.content.age && obj.content.age.value;
+    obj.content.appStatus =
+      obj.content.appStatus &&
+      obj.content.appStatus.map((i) => {
+        return i.value;
+      });
+    obj.content.tags = tags;
+    obj.content.previewImages = imagesPrevieObj;
+    obj.content.history = ["list of skylinks"];
+    obj.content.supportDetails = "";
+    obj.content.appDescription = "";
+
+    obj.content.connections = {
+      [firstSocialLinkTitle]: firstSocialLink,
+      [secondSocialLinkTitle]: secondSocialLink,
+      [thirdSocialLinkTitle]: thirdSocialLink,
+    };
+
+    console.log("======>", obj);
+
+    //sending data into the action
+    dispatch(SubmitYourAppAction(obj))
   };
+
+
+  // console.log("===>",firstSocialLinkTitle);
 
   return (
     <Box>
@@ -224,7 +273,6 @@ const SubmitApp = () => {
                 control={control}
                 ref={register}
                 name="category"
-                isMulti
                 defaultValue={selectedOption}
                 onChange={setSelectedOption}
                 options={appCatOptions}
@@ -239,7 +287,17 @@ const SubmitApp = () => {
         >
           <Box className={classes.inputContainer} flex={1}>
             <label>Manual tag</label>
-            <input className={classes.input} value="Skylink" />
+            <TagsInput
+              value={tags}
+              className={classes.input}
+              onChange={(tags) => setTags(tags)}
+            />
+            {/* <input
+              className={classes.input}
+              name="tags"
+              ref={register}
+              value="Skylink"
+            /> */}
           </Box>
 
           <Box className={`${classes.inputContainer}`} flex={1}>
@@ -276,11 +334,34 @@ const SubmitApp = () => {
                   <ImgIcon />
                 </div>
 
-                <input type="file" multiple name="images" ref={register} />
+                <input type="file" name="previewVideo" ref={register} />
               </Box>
             </Grid>
+
             <Grid item md={3} sm={6} xs={6}>
-              <Box className={classes.placeholderImg}></Box>
+              <Box>
+                <div className={classes.previewImg}>
+                  <ImgIcon />
+                </div>
+
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    forImagesPreview.push(e.target.files[0]);
+                  }}
+                />
+              </Box>
+            </Grid>
+
+            <Grid item md={3} sm={6} xs={6}>
+              <Box className={classes.placeholderImg}>
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    forImagesPreview.push(e.target.files[0]);
+                  }}
+                />
+              </Box>
             </Grid>
             <Grid item md={3} sm={6} xs={6}>
               <Box className={classes.placeholderImg}></Box>
@@ -317,12 +398,12 @@ const SubmitApp = () => {
           </div>
           <Box position="relative">
             <TextareaAutosize
-              name="appDescription"
+              name="releaseNotes"
               ref={register}
               className={classes.textarea}
               aria-label="minimum height"
               rowsMin={6}
-              value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et."
+              // value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et."
               placeholder="Write your Comment"
             />
             <span className={classes.maxChar}>0/500</span>
@@ -339,12 +420,15 @@ const SubmitApp = () => {
                   <Select
                     classNamePrefix="socialMedia"
                     className={classes.socilaMediaSelect}
-                    defaultValue={selectedOption}
-                    onChange={setSelectedOption}
+                    defaultValue={firstSocialLinkTitle}
+                    onChange={(e) => setfirstSocialLinkTitle(e.value)}
                     options={socialOption}
                     styles={reactSelectStyles}
                   />
-                  <input value="https://www.demo.com/UJJ5Rgbu2TM" />
+                  <input
+                    placeholder="https://www.demo.com/UJJ5Rgbu2TM"
+                    onChange={(e) => setfirstSocialLink(e.target.value)}
+                  />
                 </Box>
               </Grid>
               <Grid item md={6} lg={4} sm={12} xs={12}>
@@ -352,12 +436,15 @@ const SubmitApp = () => {
                   <Select
                     classNamePrefix="socialMedia"
                     className={classes.socilaMediaSelect}
-                    defaultValue={selectedOption}
-                    onChange={setSelectedOption}
+                    defaultValue={secondSocialLinkTitle}
+                    onChange={(e) => setSecondSocialLinkTitle(e.value)}
                     options={socialOption}
                     styles={reactSelectStyles}
                   />
-                  <input value="https://www.demo.com/UJJ5Rgbu2TM" />
+                  <input
+                    placeholder="https://www.demo.com/UJJ5Rgbu2TM"
+                    onChange={(e) => setSecondSocialLink(e.target.value)}
+                  />
                 </Box>
               </Grid>
               <Grid item md={6} lg={4} sm={12} xs={12}>
@@ -365,27 +452,18 @@ const SubmitApp = () => {
                   <Select
                     classNamePrefix="socialMedia"
                     className={classes.socilaMediaSelect}
-                    defaultValue={selectedOption}
-                    onChange={setSelectedOption}
+                    defaultValue={thirdSocialLinkTitle}
+                    onChange={(e) => setThirdSocialLinkTitle(e.value)}
                     options={socialOption}
                     styles={reactSelectStyles}
                   />
-                  <input value="https://www.demo.com/UJJ5Rgbu2TM" />
-                </Box>
-              </Grid>
-              <Grid item md={6} lg={4} sm={12} xs={12}>
-                <Box display="flex" className={classes.socialOptionContainer}>
-                  <Select
-                    classNamePrefix="socialMedia"
-                    className={classes.socilaMediaSelect}
-                    defaultValue={selectedOption}
-                    onChange={setSelectedOption}
-                    options={socialOption}
-                    styles={reactSelectStyles}
+                  <input
+                    placeholder="https://www.demo.com/UJJ5Rgbu2TM"
+                    onChange={(e) => setThirdSocialLink(e.target.value)}
                   />
-                  <input value="https://www.demo.com/UJJ5Rgbu2TM" />
                 </Box>
               </Grid>
+
               <Grid item md={6} lg={4} style={{ alignSelf: "center" }}>
                 <Button className={classes.button}>Submit</Button>
               </Grid>

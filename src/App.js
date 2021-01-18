@@ -40,7 +40,7 @@ function App() {
 
               <main className="app-content">
                 <Switch>
-                  <Route exact path="/appdetail">
+                  <Route exact path="/appdetail/:id">
                     <AppDetailsPage />
                   </Route>
                   <Route exact path="/submitapp">

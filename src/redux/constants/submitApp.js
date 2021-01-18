@@ -1,0 +1,1 @@
+export const SUBMIT_APP_JSON_DATA = "SUBMIT_APP_JSON_DATA";

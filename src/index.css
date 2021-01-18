@@ -259,3 +259,8 @@ border-top: 0;
 .sidebar .MuiCollapse-wrapperInner .active #deployment{
   fill: #1DBF73;
 }
+
+.react-tagsinput-input{
+  padding: 0px !important;
+  margin-top: 0px !important;
+}
