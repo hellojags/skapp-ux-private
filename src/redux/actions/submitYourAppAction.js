@@ -1,5 +1,8 @@
 import localforage from "localforage";
 import { SUBMIT_APP_JSON_DATA } from "../constants/submitApp";
+import { SkynetClient } from "skynet-js";
+
+const client = new SkynetClient("https://siasky.net/");
 
 //for storing data
 let globalArr = [];
@@ -30,6 +33,17 @@ export const GetYourAppDataAction = (data) => async (dispatch) => {
         payload: value,
       });
     });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+//action for upload videos and images
+export const UploadImagesAndVideos = (file) => async (dispatch) => {
+  try {
+    const skylink = await client.uploadFile(file);
+
+    console.log("here is the data==============>", skylink);
   } catch (err) {
     console.log(err);
   }

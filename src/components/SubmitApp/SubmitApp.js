@@ -15,7 +15,10 @@ import { useForm, Controller } from "react-hook-form";
 import { v4 as uuidv4 } from "uuid";
 import { useDispatch } from "react-redux";
 // importing action
-import { SubmitYourAppAction } from "../../redux/actions/submitYourAppAction";
+import {
+  SubmitYourAppAction,
+  UploadImagesAndVideos,
+} from "../../redux/actions/submitYourAppAction";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // If using WebPack and style-loader.
 
@@ -114,6 +117,7 @@ const SubmitApp = () => {
   const [secondSocialLink, setSecondSocialLink] = useState("");
   const [thirdSocialLink, setThirdSocialLink] = useState("");
 
+  //form submit function
   const onSubmit = (data) => {
     let obj = {
       $type: "publishedSkapp",
@@ -121,7 +125,6 @@ const SubmitApp = () => {
       version: verson,
       ts: "1610328319",
       content: data,
-      defaultPath: "index.html or EMPTY",
     };
 
     let imagesPrevieObj = {
@@ -129,6 +132,7 @@ const SubmitApp = () => {
       images: forImagesPreview,
     };
     obj.content.category = obj.content.category && obj.content.category.value;
+    obj.content.defaultPath = "index.html or EMPTY";
     obj.content.age = obj.content.age && obj.content.age.value;
     obj.content.appStatus =
       obj.content.appStatus &&
@@ -139,7 +143,6 @@ const SubmitApp = () => {
     obj.content.previewImages = imagesPrevieObj;
     obj.content.history = ["list of skylinks"];
     obj.content.supportDetails = "";
-    obj.content.appDescription = "";
 
     obj.content.connections = {
       [firstSocialLinkTitle]: firstSocialLink,
@@ -147,14 +150,13 @@ const SubmitApp = () => {
       [thirdSocialLinkTitle]: thirdSocialLink,
     };
 
-    console.log("======>", obj);
-
-    //sending data into the action
-    dispatch(SubmitYourAppAction(obj))
+    dispatch(SubmitYourAppAction(obj));
   };
 
-
-  // console.log("===>",firstSocialLinkTitle);
+  //for uploading images and videos
+  const onChangeHandlerForImagesAndVideos = (file) => {
+    dispatch(UploadImagesAndVideos(file));
+  };
 
   return (
     <Box>
@@ -334,7 +336,14 @@ const SubmitApp = () => {
                   <ImgIcon />
                 </div>
 
-                <input type="file" name="previewVideo" ref={register} />
+                <input
+                  type="file"
+                  name="previewVideo"
+                  ref={register}
+                  onChange={(e) =>
+                    onChangeHandlerForImagesAndVideos(e.target.files[0])
+                  }
+                />
               </Box>
             </Grid>
 
@@ -348,6 +357,7 @@ const SubmitApp = () => {
                   type="file"
                   onChange={(e) => {
                     forImagesPreview.push(e.target.files[0]);
+                    onChangeHandlerForImagesAndVideos(e.target.files[0]);
                   }}
                 />
               </Box>
@@ -359,6 +369,7 @@ const SubmitApp = () => {
                   type="file"
                   onChange={(e) => {
                     forImagesPreview.push(e.target.files[0]);
+                    onChangeHandlerForImagesAndVideos(e.target.files[0]);
                   }}
                 />
               </Box>
@@ -374,7 +385,7 @@ const SubmitApp = () => {
         <div className={classes.OneRowInput}>
           <div>
             <label className={classes.textareaLabel}>
-              Preview Images
+              Release Notes
               <span>This will go on App Card.</span>
             </label>
           </div>
@@ -383,7 +394,9 @@ const SubmitApp = () => {
               className={classes.textarea}
               aria-label="minimum height"
               rowsMin={4}
-              value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et."
+              ref={register}
+              name="releaseNotes"
+              // value="Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et."
               placeholder="Write your Comment"
             />
             <span className={classes.maxChar}>Max 70 Characters</span>
@@ -398,7 +411,7 @@ const SubmitApp = () => {
           </div>
           <Box position="relative">
             <TextareaAutosize
-              name="releaseNotes"
+              name="appDescription"
               ref={register}
               className={classes.textarea}
               aria-label="minimum height"
