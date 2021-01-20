@@ -25,6 +25,7 @@ import AppDetailsPage from './components/AppDetails/AppDetailsPage'
 import DeploySite from './components/Hosting/DeploySite'
 import store from "./redux/store";
 import { Provider } from "react-redux";
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
 
 function App() {
   return (

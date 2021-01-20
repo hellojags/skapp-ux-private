@@ -117,16 +117,17 @@ const AppInfo = (props) => {
   }, []);
 
   const { submitAppformData } = useSelector((state) => state.SubmitAppReducer);
+  const [data, setData] = React.useState();
 
   useEffect(() => {
     if (submitAppformData) {
       submitAppformData.filter((items) => {
         if (items.id === id) {
-          console.log("here is the fetched data of the given id===>", items);
+          setData(items);
         }
       });
     }
-  }, [submitAppformData,id]);
+  }, [submitAppformData, id]);
 
   return (
     <Fragment>
@@ -138,7 +139,9 @@ const AppInfo = (props) => {
         <Box flex={1}>
           <Typography className={classes.subHeading}>Version</Typography>
 
-          <Typography className={classes.infoText}>2.12.7</Typography>
+          <Typography className={classes.infoText}>
+            {data && data.version}
+          </Typography>
         </Box>
         <Box flex={2}>
           <Typography className={classes.subHeading}>
@@ -194,14 +197,15 @@ const AppInfo = (props) => {
           Description
         </Typography>
         <Typography variant="body2" className={classes.descText}>
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+          {data && data.content.appDescription}
+          {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
           nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
           sed diam voluptua. At vero eos et accusam et.
           <br />
           Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
           nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
           sed diam voluptua. At vero eos et accusam et.
-          <span className={classes.readMoreBtn}>Read More</span>
+          <span className={classes.readMoreBtn}>Read More</span> */}
         </Typography>
       </Box>
       <Typography component="h2" className={classes.h2}>

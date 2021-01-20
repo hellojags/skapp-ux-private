@@ -1,25 +1,31 @@
 import localforage from "localforage";
 import { SUBMIT_APP_JSON_DATA } from "../constants/submitApp";
 import { SkynetClient } from "skynet-js";
+import imageCompression from "browser-image-compression";
 
 const client = new SkynetClient("https://siasky.net/");
 
 //for storing data
 let globalArr = [];
-export const SubmitYourAppAction = (data) => async (dispatch) => {
+export const SubmitYourAppAction = (data, manageSubmitLoader) => async (
+  dispatch
+) => {
   try {
-    localforage.getItem("submitApp", function (err, value) {
+    localforage.getItem("submitApp", async function (err, value) {
       if (value) {
         value.push(data);
-        localforage.setItem("submitApp", value);
+        await localforage.setItem("submitApp", value);
         alert(data.id);
+        manageSubmitLoader(false);
       } else {
         globalArr.push(data);
-        localforage.setItem("submitApp", globalArr);
+        await localforage.setItem("submitApp", globalArr);
         alert(data.id);
+        manageSubmitLoader(false);
       }
     });
   } catch (err) {
+    manageSubmitLoader(false);
     console.log(err);
   }
 };
@@ -39,12 +45,53 @@ export const GetYourAppDataAction = (data) => async (dispatch) => {
 };
 
 //action for upload videos and images
-export const UploadImagesAndVideos = (file) => async (dispatch) => {
+export const UploadImagesAction = (file, getUploadedFile, getFun) => async (
+  dispatch
+) => {
   try {
+    const getCompressed = await imageCompression(file, {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 256,
+      useWebWorker: true,
+    });
+
+    const skylinkForCompressed = await client.uploadFile(getCompressed);
+
     const skylink = await client.uploadFile(file);
 
-    console.log("here is the data==============>", skylink);
+    let obj = {
+      thumbnail: skylinkForCompressed.skylink,
+      image: skylink.skylink,
+    };
+
+    getUploadedFile(obj);
+    getFun(false);
   } catch (err) {
+    getFun(false);
+    console.log(err);
+  }
+};
+
+export const UploadVideoAction = (
+  file,
+  thumb,
+  getUploadedFile,
+  videoUploadLoader
+) => async (dispatch) => {
+  try {
+    const skylinkForCompressed = await client.uploadFile(thumb);
+
+    const skylink = await client.uploadFile(file);
+
+    let obj = {
+      thumbnail: skylinkForCompressed.skylink,
+      video: skylink.skylink,
+    };
+
+    getUploadedFile(obj);
+    videoUploadLoader(false);
+  } catch (err) {
+    videoUploadLoader(false);
     console.log(err);
   }
 };

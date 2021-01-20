@@ -17,10 +17,14 @@ import { useDispatch } from "react-redux";
 // importing action
 import {
   SubmitYourAppAction,
-  UploadImagesAndVideos,
+  UploadImagesAction,
+  UploadVideoAction,
 } from "../../redux/actions/submitYourAppAction";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // If using WebPack and style-loader.
+import imageCompression from "browser-image-compression";
+import Alert from "@material-ui/lab/Alert";
+import Loader from "react-loader-spinner";
 
 const useStyles = makeStyles(styles);
 const optionsVersion = [
@@ -117,49 +121,197 @@ const SubmitApp = () => {
   const [secondSocialLink, setSecondSocialLink] = useState("");
   const [thirdSocialLink, setThirdSocialLink] = useState("");
 
+  const [videoObjt, setVideoObj] = useState({});
+
+  const [mandatory, setMandatory] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false);
+  const [isImageUploadFirst, setIsImageUploadingFirst] = useState(false);
+  const [isImageUploadSecond, setIsImageUploadingSecond] = useState(false);
+  const [isImageUploadThird, setIsImageUploadingThird] = useState(false);
+
+  //manage submit loader
+  const manageSubmitLoader=(val)=>{
+    setIsSubmit(val)
+  }
+
+  //manage loader to upload images
+
+
   //form submit function
   const onSubmit = (data) => {
-    let obj = {
-      $type: "publishedSkapp",
-      id: uuidv4(),
-      version: verson,
-      ts: "1610328319",
-      content: data,
-    };
+    console.log("here is the dat", data);
+    if (
+      !data.skappLogo.length ||
+      data.appname === "" ||
+      verson === "" ||
+      data.appUrl === "" ||
+      data.category === null ||
+      data.appDescription === ""
+    ) {
+      setMandatory(true);
+    } else {
+      setIsSubmit(true);
+      let obj = {
+        $type: "publishedSkapp",
+        id: uuidv4(),
+        version: verson,
+        ts: "1610328319",
+        content: data,
+      };
 
-    let imagesPrevieObj = {
-      aspectRatio: 0.5625,
-      images: forImagesPreview,
-    };
-    obj.content.category = obj.content.category && obj.content.category.value;
-    obj.content.defaultPath = "index.html or EMPTY";
-    obj.content.age = obj.content.age && obj.content.age.value;
-    obj.content.appStatus =
-      obj.content.appStatus &&
-      obj.content.appStatus.map((i) => {
-        return i.value;
-      });
-    obj.content.tags = tags;
-    obj.content.previewImages = imagesPrevieObj;
-    obj.content.history = ["list of skylinks"];
-    obj.content.supportDetails = "";
+      let imagesPrevieObj = {
+        aspectRatio: 0.5625,
+        images: forImagesPreview,
+      };
+      obj.content.category = obj.content.category && obj.content.category.value;
+      obj.content.defaultPath = "index.html or EMPTY";
+      obj.content.age = obj.content.age && obj.content.age.value;
+      obj.content.previewVideo = videoObjt;
+      obj.content.appStatus =
+        obj.content.appStatus &&
+        obj.content.appStatus.map((i) => {
+          return i.value;
+        });
+      obj.content.tags = tags;
+      obj.content.previewImages = imagesPrevieObj;
+      obj.content.history = ["list of skylinks"];
+      obj.content.supportDetails = "";
 
-    obj.content.connections = {
-      [firstSocialLinkTitle]: firstSocialLink,
-      [secondSocialLinkTitle]: secondSocialLink,
-      [thirdSocialLinkTitle]: thirdSocialLink,
-    };
+      obj.content.connections = {
+        [firstSocialLinkTitle]: firstSocialLink,
+        [secondSocialLinkTitle]: secondSocialLink,
+        [thirdSocialLinkTitle]: thirdSocialLink,
+      };
 
-    dispatch(SubmitYourAppAction(obj));
+      dispatch(SubmitYourAppAction(obj,manageSubmitLoader));
+      setMandatory(false);
+    }
   };
 
+  const getUploadedFile = (file) => {
+    forImagesPreview.push(file);
+  };
+
+  const [isVideoUploaded, setIsVideoUploaded] = useState(false);
+
+  //manage loader for videoUpload
+  const videoUploadLoader=(val)=>{
+    setIsVideoUploaded(val);
+  }
+
+  //manage image upload loaders
+
+  const firstImageLoader=(val)=>{
+    setIsImageUploadingFirst(val)
+  }
+
+  const secondImageLoader=(val)=>{
+    setIsImageUploadingSecond(val)
+    
+  }
+
+  const thirdImageLoader=(val)=>{
+    setIsImageUploadingThird(val);
+    
+  }
+
+
   //for uploading images and videos
-  const onChangeHandlerForImagesAndVideos = (file) => {
-    dispatch(UploadImagesAndVideos(file));
+  const onChangeHandlerForImages = (file, id) => {
+
+    if (id === "img1") {
+      setIsImageUploadingFirst(true);
+    } else if (id === "img2") {
+      setIsImageUploadingSecond(true);
+    } else {
+      setIsImageUploadingThird(true);
+    }
+
+    var image = document.getElementById(id);
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (oFREvent) {
+      var img = document.createElement("img");
+      img.setAttribute("width", "100%");
+      img.setAttribute("height", "160px");
+      image.append(img);
+      img.src = oFREvent.target.result;
+    };
+
+    dispatch(
+      UploadImagesAction(
+        file,
+        getUploadedFile,
+        id === "img1"
+          ? firstImageLoader
+          : id === "img2"
+          ? secondImageLoader
+          : thirdImageLoader
+      )
+    );
+  };
+
+  //
+  const getUploadVideoFile = (file) => {
+    setVideoObj(file);
+  };
+
+  const onChangeHandlerForVideos = (file) => {
+    var fileReader = new FileReader();
+    setIsVideoUploaded(true);
+    fileReader.onload = function () {
+      var blob = new Blob([fileReader.result], { type: file.type });
+      var url = URL.createObjectURL(blob);
+      var video = document.createElement("video");
+      var timeupdate = function () {
+        if (snapImage()) {
+          video.removeEventListener("timeupdate", timeupdate);
+          video.pause();
+        }
+      };
+      video.addEventListener("loadeddata", function () {
+        if (snapImage()) {
+          video.removeEventListener("timeupdate", timeupdate);
+        }
+      });
+      var snapImage = async function () {
+        var canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas
+          .getContext("2d")
+          .drawImage(video, 0, 0, canvas.width, canvas.height);
+        var image = canvas.toDataURL();
+
+        const thumb = await imageCompression.canvasToFile(canvas, "image/jpeg");
+
+        dispatch(
+          UploadVideoAction(file, thumb, getUploadVideoFile, videoUploadLoader)
+        );
+
+        var success = image.length > 100000;
+        if (success) {
+          var img = document.createElement("img");
+          img.src = image;
+          document.getElementById("vid").appendChild(img);
+          URL.revokeObjectURL(url);
+        }
+        return success;
+      };
+      video.addEventListener("timeupdate", timeupdate);
+      video.preload = "metadata";
+      video.src = url;
+      // Load video in Safari / IE11
+      video.muted = true;
+      video.playsInline = true;
+      video.play();
+    };
+    fileReader.readAsArrayBuffer(file);
   };
 
   return (
     <Box>
+      {mandatory ? <Alert severity="error">Fill all fields!</Alert> : null}
       <Box
         display="flex"
         alignItems="center"
@@ -170,10 +322,16 @@ const SubmitApp = () => {
         <Box className={classes.btnBox}>
           <Button className={classes.cancelBtn}>Cancel </Button>
           <Button
+            disabled={isSubmit}
             className={classes.submitBtn}
             onClick={handleSubmit(onSubmit)}
           >
-            <Add /> Submit{" "}
+            <Add />
+            {isSubmit ? (
+              <Loader type="Oval" color="#FFFFFF" height={15} width={15} />
+            ) : (
+              "Submit"
+            )}
           </Button>
         </Box>
       </Box>
@@ -331,55 +489,110 @@ const SubmitApp = () => {
           </div>
           <Grid container spacing={2}>
             <Grid item md={3} sm={6} xs={6}>
-              <Box>
-                <div className={classes.previewImg}>
-                  <ImgIcon />
+              <Box style={{ position: "relative" }}>
+                <div id="vid" className={classes.previewImg}>
+                  {/* <ImgIcon /> */}
+                  <div style={{ position: "absolute" }}>
+                    {isVideoUploaded && (
+                        <Loader
+                          type="Oval"
+                          color="#57C074"
+                          height={50}
+                          width={50}
+                        />
+                    )}
+                  </div>
                 </div>
 
                 <input
+                  accept=".mov,.mp4"
                   type="file"
-                  name="previewVideo"
-                  ref={register}
-                  onChange={(e) =>
-                    onChangeHandlerForImagesAndVideos(e.target.files[0])
-                  }
+                  // name="previewVideo"
+                  // ref={register}
+                  onChange={(e) => onChangeHandlerForVideos(e.target.files[0])}
                 />
               </Box>
             </Grid>
 
             <Grid item md={3} sm={6} xs={6}>
-              <Box>
-                <div className={classes.previewImg}>
-                  <ImgIcon />
+              <Box style={{ position: "relative" }}>
+                <div id="img1" className={classes.previewImg}>
+                  {/* <ImgIcon /> */}
+                  <div style={{ position: "absolute" }}>
+                    {isImageUploadFirst && (
+                      <Loader
+                        type="Oval"
+                        color="#57C074"
+                        height={50}
+                        width={50}
+                      />
+                    )}
+                  </div>
                 </div>
 
                 <input
+                  accept=".png,.jpg"
                   type="file"
                   onChange={(e) => {
-                    forImagesPreview.push(e.target.files[0]);
-                    onChangeHandlerForImagesAndVideos(e.target.files[0]);
+                    onChangeHandlerForImages(e.target.files[0], "img1");
                   }}
                 />
               </Box>
             </Grid>
 
             <Grid item md={3} sm={6} xs={6}>
-              <Box className={classes.placeholderImg}>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    forImagesPreview.push(e.target.files[0]);
-                    onChangeHandlerForImagesAndVideos(e.target.files[0]);
-                  }}
-                />
+              <Box
+                style={{ position: "relative" }}
+                id="img2"
+                className={classes.placeholderImg}
+              >
+                <div style={{ position: "absolute" }}>
+                  {isImageUploadSecond && (
+                    <Loader
+                      type="Oval"
+                      color="#57C074"
+                      height={50}
+                      width={50}
+                    />
+                  )}
+                </div>
               </Box>
+              <input
+                accept=".png,.jpg"
+                type="file"
+                onChange={(e) => {
+                  onChangeHandlerForImages(e.target.files[0], "img2");
+                }}
+              />
             </Grid>
             <Grid item md={3} sm={6} xs={6}>
-              <Box className={classes.placeholderImg}></Box>
+              <Box
+                style={{ position: "relative" }}
+                id="img3"
+                className={classes.placeholderImg}
+              >
+                <div style={{ position: "absolute" }}>
+                  {isImageUploadThird && (
+                    <Loader
+                      type="Oval"
+                      color="#57C074"
+                      height={50}
+                      width={50}
+                    />
+                  )}
+                </div>
+              </Box>
+              <input
+                accept=".png,.jpg"
+                type="file"
+                onChange={(e) => {
+                  onChangeHandlerForImages(e.target.files[0], "img3");
+                }}
+              />
             </Grid>
-            <Grid item md={3} sm={6} xs={6}>
+            {/* <Grid item md={3} sm={6} xs={6}>
               <Box className={classes.placeholderImg}></Box>
-            </Grid>
+            </Grid> */}
           </Grid>
         </div>
         <div className={classes.OneRowInput}>
@@ -478,7 +691,22 @@ const SubmitApp = () => {
               </Grid>
 
               <Grid item md={6} lg={4} style={{ alignSelf: "center" }}>
-                <Button className={classes.button}>Submit</Button>
+                <Button
+                  className={classes.button}
+                  onClick={handleSubmit(onSubmit)}
+                  disabled={isSubmit}
+                >
+                  {isSubmit ? (
+                    <Loader
+                      type="Oval"
+                      color="#FFFFFF"
+                      height={15}
+                      width={15}
+                    />
+                  ) : (
+                    "Submit"
+                  )}
+                </Button>
               </Grid>
             </Grid>
           </Box>
