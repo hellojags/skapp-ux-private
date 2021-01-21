@@ -3,9 +3,6 @@ import { Box, makeStyles, Typography } from "@material-ui/core";
 import ScreenShot from "../../assets/img/sc.jpg";
 import SimilarApps from "./SimilarApps";
 import AppComments from "./AppComments";
-import { GetYourAppDataAction } from "../../redux/actions/submitYourAppAction";
-import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -107,28 +104,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const AppInfo = (props) => {
+const AppInfo = ({ data }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { id } = useParams();
-
-  useEffect(() => {
-    dispatch(GetYourAppDataAction());
-  }, []);
-
-  const { submitAppformData } = useSelector((state) => state.SubmitAppReducer);
-  const [data, setData] = React.useState();
-
-  useEffect(() => {
-    if (submitAppformData) {
-      submitAppformData.filter((items) => {
-        if (items.id === id) {
-          setData(items);
-        }
-      });
-    }
-  }, [submitAppformData, id]);
-
+  console.log(data&&data.content.previewVideo.thumbnail.split('sia:')[1]);
   return (
     <Fragment>
       <Typography component="h2" className={`${classes.h2} ${classes.mb0}`}>
@@ -213,20 +191,42 @@ const AppInfo = (props) => {
       </Typography>
       <Box display="flex" flexWrap="wrap">
         <Box paddingRight=".5rem" className={classes.scContainer}>
-          <img src={ScreenShot} alt="sc" />
+          <img
+            src={
+              data &&
+              `https://siasky.net/${
+                data.content.previewVideo.thumbnail.split("sia:")[1]
+              }`
+            }
+            alt="sc"
+          />
         </Box>
-        <Box paddingRight=".5rem" className={classes.scContainer}>
-          <img src={ScreenShot} alt="sc" />
-        </Box>
-        <Box paddingRight=".5rem" className={classes.scContainer}>
-          <img src={ScreenShot} alt="sc" />
-        </Box>
-        <Box paddingRight=".5rem" className={classes.scContainer}>
-          <img src={ScreenShot} alt="sc" />
-        </Box>
-        <Box className={classes.scContainer}>
-          <img src={ScreenShot} alt="sc" />
-        </Box>
+        {data && data.content.previewImages.images.length
+          ? data.content.previewImages.images.map((i,index) => {
+              return (
+                <Box
+                  key={index}
+                  paddingRight=".5rem"
+                  className={classes.scContainer}
+                >
+                  <img
+                    src={`https://siasky.net/${i.thumbnail.split("sia:")[1]}`}
+                    alt="sc"
+                  />
+                </Box>
+              );
+            })
+          : null}
+
+        {/* // <Box paddingRight=".5rem" className={classes.scContainer}>
+        //   <img src={ScreenShot} alt="sc" />
+        // </Box>
+        // <Box paddingRight=".5rem" className={classes.scContainer}>
+        //   <img src={ScreenShot} alt="sc" />
+        // </Box>
+        // <Box className={classes.scContainer}>
+        //   <img src={ScreenShot} alt="sc" />
+        // </Box> */}
       </Box>
       <Box className={classes.descTextContainer} marginTop="15px">
         <Typography component="h2" className={classes.h2}>
@@ -259,7 +259,8 @@ const AppInfo = (props) => {
         <Typography component="h2" className={classes.h2}>
           Comments (65)
         </Typography>
-        <AppComments />
+
+        <AppComments uid={data && data.id} version={data && data.version} />
       </Box>
     </Fragment>
   );

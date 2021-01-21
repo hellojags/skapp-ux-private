@@ -269,3 +269,9 @@ border-top: 0;
   width: 100%;
   height: 160px;
 }
+
+.required-field{
+  color: red;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}

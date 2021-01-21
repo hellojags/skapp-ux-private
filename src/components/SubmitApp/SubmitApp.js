@@ -19,6 +19,7 @@ import {
   SubmitYourAppAction,
   UploadImagesAction,
   UploadVideoAction,
+  UploadAppLogo,
 } from "../../redux/actions/submitYourAppAction";
 import TagsInput from "react-tagsinput";
 import "react-tagsinput/react-tagsinput.css"; // If using WebPack and style-loader.
@@ -129,26 +130,38 @@ const SubmitApp = () => {
   const [isImageUploadSecond, setIsImageUploadingSecond] = useState(false);
   const [isImageUploadThird, setIsImageUploadingThird] = useState(false);
 
+  const [appLogo, setAppLogo] = useState("");
+  const [isLogoUploaded, setIsLogoUploaded] = useState(false);
+
+  //require
+  const [isAppLogoTrue, setIsAppLogoTrue] = useState(false);
+  const [isAppNameTrue, setIsAppNameTrue] = useState(false);
+  const [isAppVersionTrue, setIsAppVersionTrue] = useState(false);
+  const [isAppUrlTrue, setIsAppUrlTrue] = useState(false);
+  const [isAppCatTrue, setIsAppCatTrue] = useState(false);
+  const [isAppDetailDesTrue, setIsAppDetailDesTrue] = useState(false);
+
   //manage submit loader
-  const manageSubmitLoader=(val)=>{
-    setIsSubmit(val)
-  }
+  const manageSubmitLoader = (val) => {
+    setIsSubmit(val);
+  };
 
   //manage loader to upload images
-
-
   //form submit function
   const onSubmit = (data) => {
-    console.log("here is the dat", data);
-    if (
-      !data.skappLogo.length ||
-      data.appname === "" ||
-      verson === "" ||
-      data.appUrl === "" ||
-      data.category === null ||
-      data.appDescription === ""
-    ) {
-      setMandatory(true);
+    if (appLogo === "") {
+      setIsAppLogoTrue(true);
+      // setMandatory(true);
+    } else if (data.appname === "") {
+      setIsAppNameTrue(true);
+    } else if (verson === "") {
+      setIsAppVersionTrue(true);
+    } else if (data.appUrl === "") {
+      setIsAppUrlTrue(true);
+    } else if (data.category === null) {
+      setIsAppCatTrue(true);
+    } else if (data.appDescription === "") {
+      setIsAppDetailDesTrue(true);
     } else {
       setIsSubmit(true);
       let obj = {
@@ -163,6 +176,7 @@ const SubmitApp = () => {
         aspectRatio: 0.5625,
         images: forImagesPreview,
       };
+      obj.content.skappLogo = appLogo;
       obj.content.category = obj.content.category && obj.content.category.value;
       obj.content.defaultPath = "index.html or EMPTY";
       obj.content.age = obj.content.age && obj.content.age.value;
@@ -183,7 +197,7 @@ const SubmitApp = () => {
         [thirdSocialLinkTitle]: thirdSocialLink,
       };
 
-      dispatch(SubmitYourAppAction(obj,manageSubmitLoader));
+      dispatch(SubmitYourAppAction(obj, manageSubmitLoader));
       setMandatory(false);
     }
   };
@@ -195,30 +209,26 @@ const SubmitApp = () => {
   const [isVideoUploaded, setIsVideoUploaded] = useState(false);
 
   //manage loader for videoUpload
-  const videoUploadLoader=(val)=>{
+  const videoUploadLoader = (val) => {
     setIsVideoUploaded(val);
-  }
+  };
 
   //manage image upload loaders
 
-  const firstImageLoader=(val)=>{
-    setIsImageUploadingFirst(val)
-  }
+  const firstImageLoader = (val) => {
+    setIsImageUploadingFirst(val);
+  };
 
-  const secondImageLoader=(val)=>{
-    setIsImageUploadingSecond(val)
-    
-  }
+  const secondImageLoader = (val) => {
+    setIsImageUploadingSecond(val);
+  };
 
-  const thirdImageLoader=(val)=>{
+  const thirdImageLoader = (val) => {
     setIsImageUploadingThird(val);
-    
-  }
-
+  };
 
   //for uploading images and videos
   const onChangeHandlerForImages = (file, id) => {
-
     if (id === "img1") {
       setIsImageUploadingFirst(true);
     } else if (id === "img2") {
@@ -309,6 +319,29 @@ const SubmitApp = () => {
     fileReader.readAsArrayBuffer(file);
   };
 
+  const setLogoUploaded = (file) => {
+    setAppLogo(file);
+  };
+
+  const logoLoaderHandler = (val) => {
+    setIsLogoUploaded(val);
+  };
+
+  const UploadLogoFunction = (file) => {
+    setIsLogoUploaded(true);
+    var image = document.getElementById("logo");
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (oFREvent) {
+      var img = document.createElement("img");
+      img.setAttribute("width", "100%");
+      img.setAttribute("height", "160px");
+      image.append(img);
+      img.src = oFREvent.target.result;
+    };
+    dispatch(UploadAppLogo(file, setLogoUploaded, logoLoaderHandler));
+  };
+
   return (
     <Box>
       {mandatory ? <Alert severity="error">Fill all fields!</Alert> : null}
@@ -340,14 +373,31 @@ const SubmitApp = () => {
         {/* < */}
         <Box>
           <label className={classes.label}>Site Logo</label>
-          <div className={classes.siteLogo}>
-            <ImgIcon />
+          <div
+            style={{ position: "relative" }}
+            id="logo"
+            className={classes.siteLogo}
+          >
+            {/* <ImgIcon /> */}
+
+            <div style={{ position: "absolute" }}>
+              {isLogoUploaded && (
+                <Loader type="Oval" color="#57C074" height={50} width={50} />
+              )}
+            </div>
           </div>
+
           <div className={classes.inputGuide}>
             Max. size of 5 MB in: JPG or PNG. 300x500 or larger recommended
           </div>
-          <input type="file" name="skappLogo" ref={register} />
+          <input
+            type="file"
+            onChange={(e) => UploadLogoFunction(e.target.files[0])}
+          />
         </Box>
+        {isAppLogoTrue && (
+          <div className="required-field">This field is required</div>
+        )}
         <Box
           display="flex"
           className={`${classes.formRow} ${classes.formRow1}`}
@@ -363,6 +413,9 @@ const SubmitApp = () => {
               name="appname"
               ref={register}
             />
+            {isAppNameTrue && (
+              <div className="required-field">This field is required</div>
+            )}
           </Box>
           <Box className={`${classes.inputContainer} ${classes.selectVersion}`}>
             <label>Version</label>
@@ -373,6 +426,9 @@ const SubmitApp = () => {
                 options={optionsVersion}
                 styles={reactSelectStyles}
               />
+              {isAppVersionTrue && (
+                <div className="required-field">This field is required</div>
+              )}
             </Box>
           </Box>
           <Box className={classes.inputContainer} flex={1}>
@@ -415,6 +471,9 @@ const SubmitApp = () => {
               className={classes.input}
               placeholder="https://www.skapp.com/UJJ5Rgbu2TM"
             />
+            {isAppUrlTrue && (
+              <div className="required-field">This field is required</div>
+            )}
           </Box>
           <Box className={classes.inputContainer} flex={1}>
             <label>Source Code</label>
@@ -438,6 +497,9 @@ const SubmitApp = () => {
                 options={appCatOptions}
                 styles={reactSelectStyles}
               />
+              {isAppCatTrue && (
+                <div className="required-field">This field is required</div>
+              )}
             </Box>
           </Box>
         </Box>
@@ -494,12 +556,12 @@ const SubmitApp = () => {
                   {/* <ImgIcon /> */}
                   <div style={{ position: "absolute" }}>
                     {isVideoUploaded && (
-                        <Loader
-                          type="Oval"
-                          color="#57C074"
-                          height={50}
-                          width={50}
-                        />
+                      <Loader
+                        type="Oval"
+                        color="#57C074"
+                        height={50}
+                        width={50}
+                      />
                     )}
                   </div>
                 </div>
@@ -634,6 +696,9 @@ const SubmitApp = () => {
             />
             <span className={classes.maxChar}>0/500</span>
           </Box>
+          {isAppDetailDesTrue && (
+            <div className="required-field">This field is required</div>
+          )}
         </div>
         <div className={classes.OneRowInput}>
           <div>

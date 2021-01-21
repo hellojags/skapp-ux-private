@@ -1,1 +1,2 @@
 export const SUBMIT_APP_JSON_DATA = "SUBMIT_APP_JSON_DATA";
+export const ALL_COMMENTS = "ALL_COMMENTS";

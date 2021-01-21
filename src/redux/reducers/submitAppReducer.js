@@ -1,7 +1,8 @@
-import { SUBMIT_APP_JSON_DATA } from "../constants/submitApp";
+import { SUBMIT_APP_JSON_DATA, ALL_COMMENTS } from "../constants/submitApp";
 
 let initState = {
   submitAppformData: [],
+  comments: [],
 };
 
 export const SubmitAppReducer = (state = initState, action) => {
@@ -12,6 +13,11 @@ export const SubmitAppReducer = (state = initState, action) => {
       return {
         ...state,
         submitAppformData: payload,
+      };
+    case ALL_COMMENTS:
+      return {
+        ...state,
+        comments: payload,
       };
     default:
       return state;

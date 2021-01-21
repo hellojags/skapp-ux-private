@@ -133,64 +133,67 @@ const useStyles = makeStyles({
         }
     }
 })
-const AppDetailsHeader = () => {
-    const classes = useStyles()
-    return (
-        <Box className={classes.AppHeaderContainer} display='flex'>
-            <Box className={classes.box1}>
-                <Box display='flex' width='100%' >
-                    <Box display="flex" alignItems="center" className={classes.VisiIconContainer}>
-                        <VisibilityOutlinedIcon />
-                        <Typography >
-                            2.5k
-                    </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" className={classes.msgIconContainer}>
-                        <MsgIcon className={classes.MsgIcon} />
-                        <Typography >
-                            1.3k
-                    </Typography>
-                    </Box>
-                    <Box display="flex" alignItems="center" marginRight="0">
-                        <StarIcon className={classes.StarIcon} />
-                        <Typography>
-                            5.0 (1k+)
-                        </Typography>
-                    </Box>
-                    <Box className={classes.favrIcon}>
-                        <IconButton aria-label="Favourite Button" size="small">
-                            <HeartIcon className={classes.HeartIcon} />
-                        </IconButton>
-                    </Box>
-                    <Box className={classes.sharIcon}>
-                        <IconButton aria-label="Share Button" size="small" >
-                            <ShareIcon className={classes.ShareIcon} />
-                        </IconButton>
-                    </Box>
-                </Box>
-                <Box marginTop="10px">
-                    <Typography >
-                        Skapp
-                    </Typography>
-                    <Typography component='h1' className={classes.h1}>
-                        SkySpaces
-                    </Typography>
-                    <Typography component='p' className={classes.text}>
-                        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et.
-                    </Typography>
-                    <Button size="small" className={classes.programBtn}>
-                        Programms
-                    </Button>
-                    <Box>
-                        <Button className={classes.installBtn}>+ Install</Button>
-                    </Box>
-                </Box>
-            </Box>
-            <Box alignSelf='center' className={classes.box2} flex={1}>
-                <img src={cubsImg} alt="igm" />
-            </Box>
+const AppDetailsHeader = ({ data }) => {
+  const classes = useStyles();
+  return (
+    <Box className={classes.AppHeaderContainer} display="flex">
+      <Box className={classes.box1}>
+        <Box display="flex" width="100%">
+          <Box
+            display="flex"
+            alignItems="center"
+            className={classes.VisiIconContainer}
+          >
+            <VisibilityOutlinedIcon />
+            <Typography>2.5k</Typography>
+          </Box>
+          <Box
+            display="flex"
+            alignItems="center"
+            className={classes.msgIconContainer}
+          >
+            <MsgIcon className={classes.MsgIcon} />
+            <Typography>1.3k</Typography>
+          </Box>
+          <Box display="flex" alignItems="center" marginRight="0">
+            <StarIcon className={classes.StarIcon} />
+            <Typography>5.0 (1k+)</Typography>
+          </Box>
+          <Box className={classes.favrIcon}>
+            <IconButton aria-label="Favourite Button" size="small">
+              <HeartIcon className={classes.HeartIcon} />
+            </IconButton>
+          </Box>
+          <Box className={classes.sharIcon}>
+            <IconButton aria-label="Share Button" size="small">
+              <ShareIcon className={classes.ShareIcon} />
+            </IconButton>
+          </Box>
         </Box>
-    )
-}
+        <Box marginTop="10px">
+          <Typography>Skapp</Typography>
+          <Typography component="h1" className={classes.h1}>
+            {data && data.content.appname}
+          </Typography>
+          <Typography component="p" className={classes.text}>
+            {/* Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
+            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
+            erat, sed diam voluptua. At vero eos et accusam et. */}
+            {data && data.content.appDescription}
+          </Typography>
+          <Button size="small" className={classes.programBtn}>
+            {data && data.content.category}
+          </Button>
+          <Box>
+            <Button className={classes.installBtn}>+ Install</Button>
+          </Box>
+        </Box>
+      </Box>
+      <Box alignSelf="center" className={classes.box2} flex={1}>
+        <img src={cubsImg} alt="igm" />
+      </Box>
+    </Box>
+  );
+};
 
 export default AppDetailsHeader
