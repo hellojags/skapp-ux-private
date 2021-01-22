@@ -30,24 +30,41 @@ export const SubmitYourAppAction = (data, manageSubmitLoader) => async (
   }
 };
 
+let allCommentsArray = [];
+let itemForFoundedID = [];
+
 export const SubmitCommentAction = (data) => async (dispatch) => {
   try {
-    localforage.getItem("appComments", async function (err, value) {
+    await localforage.getItem("appComments", async function (err, value) {
       if (value) {
-        console.log("here is the value", value);
-        let obj = {
-          timestamp: new Date(),
-          comment: data.content.comments[0].comment,
-        };
-        value.content.comments.push(obj);
+        // console.log("length founded");
+      value.map(async (item) => {
+        if (item.id === data.id) {
+          let obj = {
+            timestamp: new Date(),
+            comment: data.content.comments[0].comment,
+          };
+           item.content.comments.push(obj);
+           itemForFoundedID.push(item);
+        } else {
+          // console.log("hahah id is different");
+        }
+      });
+      // console.log(itemForFoundedID);
+      if (itemForFoundedID.length) {
         await localforage.setItem("appComments", value);
-        // alert("commented!");
-        dispatch(GetYourCommentsAction())
+        dispatch(GetYourCommentsAction(data.id));
       } else {
-        await localforage.setItem("appComments", data);
-        // alert("commented!");
-        dispatch(GetYourCommentsAction())
-
+        await value.push(data);
+        await localforage.setItem("appComments", value);
+        dispatch(GetYourCommentsAction(data.id));
+      }
+      } else {
+        // console.log("length not founded");
+        await allCommentsArray.push(data);
+        await localforage.setItem("appComments", allCommentsArray);
+        allCommentsArray = [];
+        dispatch(GetYourCommentsAction(data.id));
       }
     });
   } catch (err) {
@@ -71,12 +88,20 @@ export const GetYourAppDataAction = (data) => async (dispatch) => {
 
 //for fetching data
 export const GetYourCommentsAction = (data) => async (dispatch) => {
+  console.log("Called");
   try {
     await localforage.getItem("appComments", function (err, value) {
-      dispatch({
-        type: ALL_COMMENTS,
-        payload: value,
-      });
+      if (value) {
+        let getVal = value.filter((i) => {
+          if (i.id === data) {
+            return i;
+          }
+        });
+        dispatch({
+          type: ALL_COMMENTS,
+          payload: getVal,
+        });
+      }
     });
   } catch (err) {
     console.log(err);

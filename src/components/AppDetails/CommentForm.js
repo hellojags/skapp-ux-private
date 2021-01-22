@@ -79,6 +79,7 @@ const CommentForm = ({ uid, version }) => {
         ts: "1610328319",
       };
       dispatch(SubmitCommentAction(obj));
+      setComment("");
     }
   };
 
@@ -88,6 +89,7 @@ const CommentForm = ({ uid, version }) => {
         className={classes.textarea}
         aria-label="minimum height"
         rowsMin={4}
+        value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Write your Comment"
       />

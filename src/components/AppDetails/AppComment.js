@@ -6,6 +6,7 @@ import { Box, makeStyles, Typography } from "@material-ui/core";
 import { GetYourCommentsAction } from "../../redux/actions/submitYourAppAction";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles({
   ratingDiv: {
@@ -54,10 +55,13 @@ const AppComment = () => {
   const dispatch = useDispatch();
   const { comments } = useSelector((state) => state.SubmitAppReducer);
   const [data, setData] = React.useState();
+  const { id } = useParams();
 
   React.useEffect(() => {
-    dispatch(GetYourCommentsAction());
-  }, []);
+    if (id) {
+      dispatch(GetYourCommentsAction(id));
+    }
+  }, [id]);
 
   React.useEffect(() => {
     if (comments) {
@@ -65,55 +69,58 @@ const AppComment = () => {
     }
   }, [comments]);
 
+  // console.log("=========>", data);
+
   return (
     <div>
-      {data && data.content
-        ? data.content.comments.map((i, index) => {
-            return (
-              <Box key={index} display="flex" className={classes.AppComment}>
-                <Box
-                  className={classes.commenterImg}
-                  borderRadius="5px"
-                  overflow="hidden"
-                >
-                  <img src="https://i.pravatar.cc/80" alt="" />
-                </Box>
-                <Box className={classes.ratingAndName}>
-                  <Box display="flex" alignItems="center">
-                    <h3 className={classes.commenterName}>Marquise Vasquez</h3>
-                    <Box
-                      className={classes.ratingDiv}
-                      display="flex"
-                      alignItems="center"
-                    >
-                      <Box marginRight=".5rem" display="flex">
-                        <FontAwesomeIcon icon={filledStar} />
-                        <FontAwesomeIcon icon={filledStar} />
-                        <FontAwesomeIcon icon={filledStar} />
-                        <FontAwesomeIcon icon={filledStar} />
-                        <FontAwesomeIcon icon={unFilledStar} />
-                      </Box>
-                      <span className={classes.opcity60}>3.8</span>
-                    </Box>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" className={classes.opcity60}>
-                      {/* October 3, 2019 */}
-                      {moment(i.timestamp).format("MMMM D, YYYY")}
-                    </Typography>
-                    <Typography
-                      variant="caption"
-                      component="div"
-                      className={classes.opcity60}
-                    >
-                      {i.comment}
-                    </Typography>
-                  </Box>
-                </Box>
-              </Box>
-            );
-          })
-        : null}
+      {data &&
+        data.map((item) => {
+         return item.content.comments.map((i, index) => {
+           return (
+             <Box key={index} display="flex" className={classes.AppComment}>
+               <Box
+                 className={classes.commenterImg}
+                 borderRadius="5px"
+                 overflow="hidden"
+               >
+                 <img src="https://i.pravatar.cc/80" alt="" />
+               </Box>
+               <Box className={classes.ratingAndName}>
+                 <Box display="flex" alignItems="center">
+                   <h3 className={classes.commenterName}>Marquise Vasquez</h3>
+                   <Box
+                     className={classes.ratingDiv}
+                     display="flex"
+                     alignItems="center"
+                   >
+                     <Box marginRight=".5rem" display="flex">
+                       <FontAwesomeIcon icon={filledStar} />
+                       <FontAwesomeIcon icon={filledStar} />
+                       <FontAwesomeIcon icon={filledStar} />
+                       <FontAwesomeIcon icon={filledStar} />
+                       <FontAwesomeIcon icon={unFilledStar} />
+                     </Box>
+                     <span className={classes.opcity60}>3.8</span>
+                   </Box>
+                 </Box>
+                 <Box>
+                   <Typography variant="caption" className={classes.opcity60}>
+                     {/* October 3, 2019 */}
+                     {moment(i.timestamp).format("MMMM D, YYYY")}
+                   </Typography>
+                   <Typography
+                     variant="caption"
+                     component="div"
+                     className={classes.opcity60}
+                   >
+                     {i.comment}
+                   </Typography>
+                 </Box>
+               </Box>
+             </Box>
+           );
+         });
+        })}
     </div>
   );
 };

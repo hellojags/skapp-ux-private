@@ -106,7 +106,6 @@ const useStyles = makeStyles((theme) => ({
 
 const AppInfo = ({ data }) => {
   const classes = useStyles();
-  console.log(data&&data.content.previewVideo.thumbnail.split('sia:')[1]);
   return (
     <Fragment>
       <Typography component="h2" className={`${classes.h2} ${classes.mb0}`}>
@@ -194,6 +193,7 @@ const AppInfo = ({ data }) => {
           <img
             src={
               data &&
+              data.content.previewVideo.thumbnail &&
               `https://siasky.net/${
                 data.content.previewVideo.thumbnail.split("sia:")[1]
               }`
@@ -202,7 +202,7 @@ const AppInfo = ({ data }) => {
           />
         </Box>
         {data && data.content.previewImages.images.length
-          ? data.content.previewImages.images.map((i,index) => {
+          ? data.content.previewImages.images.map((i, index) => {
               return (
                 <Box
                   key={index}
