@@ -82,6 +82,34 @@ export const ViewAction = (data, pushRoute) => async (dispatch) => {
   }
 };
 
+let checkAccessArr = [];
+export const AccessedAction = (data, url, pushRoute) => async (dispatch) => {
+  try {
+    // console.log("called====>", data);
+    await localforage
+      .getItem("appStats", function (err, value) {
+        if (value) {
+          value.map(async (item) => {
+            if (item[`${data}#stats`]) {
+              item[`${data}#stats`].content.accessed++;
+              checkAccessArr.push(item[`${data}#stats`]);
+            } else {
+              // console.log("not founded brooooO====>");
+            }
+          });
+        }
+        if (checkAccessArr.length) {
+          localforage.setItem("appStats", value);
+        }
+      })
+      .then(() => {
+        pushRoute(url);
+      });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 //get isApp Fav
 export const isAppInFavAction = (id) => async (dispatch) => {
   try {

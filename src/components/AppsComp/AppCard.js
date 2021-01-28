@@ -18,7 +18,7 @@ import { ReactComponent as StarIcon } from "../../assets/img/icons/star-favorite
 import FiberManualRecordRoundedIcon from "@material-ui/icons/FiberManualRecordRounded";
 import CheckRoundedIcon from "@material-ui/icons/CheckRounded";
 import ShareApp from "../ShareApp/ShareApp";
-import { ViewAction } from "../../redux/actions/appStatsAction";
+import { ViewAction, AccessedAction } from "../../redux/actions/appStatsAction";
 import { useDispatch } from "react-redux";
 
 // const MobileBreakPoint = '575px'
@@ -35,23 +35,34 @@ const AppCard = ({ selectable, updated, item }) => {
   const classes = useStyles();
   const [isCardSelected, setIsCardSelected] = useState(false);
 
-  const pushRoute=(getID)=>{
+  const pushRoute = (getID) => {
     let win = window.open(`/appdetail/${getID}`, "_blank");
     win.focus();
-  }
+  };
 
   const checkBoxClickHanlder = async (getID) => {
     isCardSelected ? setIsCardSelected(false) : setIsCardSelected(true);
+  };
+
+  const ViewAppDetail = async (getID) => {
     await dispatch(ViewAction(getID, pushRoute));
-   
+  };
+
+  const OpenAppUrl = (url) => {
+   window.open(url, "_blank");
+    // win.focus();
+  };
+
+  const AccessApp = async (id, appurl) => {
+    dispatch(AccessedAction(id, appurl, OpenAppUrl));
   };
 
   return (
     <Box className="card-container" position="relative">
-      {selectable && (
+      {/* {selectable && (
         <Box
           role="button"
-          onClick={() => checkBoxClickHanlder(item.id)}
+          onClick={checkBoxClickHanlder}
           className={classes.checkBox}
           style={{ opacity: isCardSelected ? 1 : 0.62 }}
         >
@@ -60,11 +71,12 @@ const AppCard = ({ selectable, updated, item }) => {
             <CheckRoundedIcon className={classes.checkedIcon} />
           )}
         </Box>
-      )}
+      )} */}
       <ShareApp shareModelOpen={modalOpen} shareModelFn={HandleShareModel} />
       <Card className={classes.root}>
         <CardActionArea className={classes.cardActionArea} component="div">
           <CardMedia
+            onClick={() => ViewAppDetail(item.id)}
             className={classes.media}
             image={
               item.content.skappLogo.thumbnail &&
@@ -82,6 +94,7 @@ const AppCard = ({ selectable, updated, item }) => {
               alignItems="center"
             >
               <Typography
+                onClick={() => AccessApp(item.id, item.content.appUrl)}
                 className={classes.cardH2}
                 gutterBottom
                 variant="h5"
