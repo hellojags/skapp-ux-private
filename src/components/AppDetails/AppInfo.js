@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect } from "react";
 import { Box, makeStyles, Typography } from "@material-ui/core";
 import ScreenShot from "../../assets/img/sc.jpg";
-import SimilarApps from "./SimilarApps";
+// import SimilarApps from "./SimilarApps";
 import AppComments from "./AppComments";
 
 const useStyles = makeStyles((theme) => ({
@@ -253,7 +253,7 @@ const AppInfo = ({ data }) => {
         <Typography component="h2" className={classes.h2}>
           Similar Apps
         </Typography>
-        <SimilarApps />
+        {/* <SimilarApps /> */}
       </Box>
       <Box overflow="hidden" marginTop="15px">
         <Typography component="h2" className={classes.h2}>

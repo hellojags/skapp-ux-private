@@ -7,6 +7,8 @@ const client = new SkynetClient("https://siasky.net/");
 
 //for storing data
 let globalArr = [];
+let appStatsArr = [];
+
 export const SubmitYourAppAction = (data, manageSubmitLoader) => async (
   dispatch
 ) => {
@@ -24,6 +26,34 @@ export const SubmitYourAppAction = (data, manageSubmitLoader) => async (
         manageSubmitLoader(false);
       }
     });
+
+    // app stats object
+    let obj = {
+      [data.id + "#stats"]: {
+        $type: "skapp",
+        $subType: "stats",
+        id: data.id,
+        version: data.version,
+        prevSkylink: "",
+        content: {
+          favorite: 0,
+          viewed: 0,
+          liked: 0,
+          accessed: 0,
+        },
+        ts: data.ts,
+      },
+    };
+
+    localforage.getItem("appStats", async function (err, value) {
+      if (value) {
+        value.push(obj);
+        await localforage.setItem("appStats", value);
+      } else {
+        appStatsArr.push(obj);
+        await localforage.setItem("appStats", appStatsArr);
+      }
+    });
   } catch (err) {
     manageSubmitLoader(false);
     console.log(err);
@@ -38,27 +68,27 @@ export const SubmitCommentAction = (data) => async (dispatch) => {
     await localforage.getItem("appComments", async function (err, value) {
       if (value) {
         // console.log("length founded");
-      value.map(async (item) => {
-        if (item.id === data.id) {
-          let obj = {
-            timestamp: new Date(),
-            comment: data.content.comments[0].comment,
-          };
-           item.content.comments.push(obj);
-           itemForFoundedID.push(item);
+        value.map(async (item) => {
+          if (item.id === data.id) {
+            let obj = {
+              timestamp: new Date(),
+              comment: data.content.comments[0].comment,
+            };
+            item.content.comments.push(obj);
+            itemForFoundedID.push(item);
+          } else {
+            // console.log("hahah id is different");
+          }
+        });
+        // console.log(itemForFoundedID);
+        if (itemForFoundedID.length) {
+          await localforage.setItem("appComments", value);
+          dispatch(GetYourCommentsAction(data.id));
         } else {
-          // console.log("hahah id is different");
+          await value.push(data);
+          await localforage.setItem("appComments", value);
+          dispatch(GetYourCommentsAction(data.id));
         }
-      });
-      // console.log(itemForFoundedID);
-      if (itemForFoundedID.length) {
-        await localforage.setItem("appComments", value);
-        dispatch(GetYourCommentsAction(data.id));
-      } else {
-        await value.push(data);
-        await localforage.setItem("appComments", value);
-        dispatch(GetYourCommentsAction(data.id));
-      }
       } else {
         // console.log("length not founded");
         await allCommentsArray.push(data);
@@ -73,7 +103,7 @@ export const SubmitCommentAction = (data) => async (dispatch) => {
 };
 
 //for fetching data
-export const GetYourAppDataAction = (data) => async (dispatch) => {
+export const GetYourAppDataAction = () => async (dispatch) => {
   try {
     await localforage.getItem("submitApp", function (err, value) {
       dispatch({

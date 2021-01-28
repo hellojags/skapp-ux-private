@@ -1,31 +1,27 @@
-import React from 'react'
-import { ThemeProvider } from '@material-ui/core'
-import Apps from './components/AppsComp/Apps'
-import Navbar from './components/Navbar/Navbar'
-import Sidebar from './components/Sidebar/Sidebar'
-import SubmitApp from './components/SubmitApp/SubmitApp'
-import './index.css'
-import { skappTheme } from './theme/Theme'
-import Error from './components/ErrorPage/Error'
-import NoApps from './components/NoApps/NoApps'
-import InstalledApps from './components/AppsComp/InstalledApps'
-import Hosting from './components/Hosting/Hosting'
-import SubmitNewSite from './components/Hosting/SubmitNewSite'
-import NoDomain from './components/Domain/NoDomain'
-import Domains from './components/Domain/Domains'
-import StorageGateway from './components/Hosting/StorageGateway'
-import Settings from './components/Setting/Settings'
+import React, { useEffect } from "react";
+import { ThemeProvider } from "@material-ui/core";
+import Apps from "./components/AppsComp/Apps";
+import Navbar from "./components/Navbar/Navbar";
+import Sidebar from "./components/Sidebar/Sidebar";
+import SubmitApp from "./components/SubmitApp/SubmitApp";
+import "./index.css";
+import { skappTheme } from "./theme/Theme";
+import Error from "./components/ErrorPage/Error";
+import NoApps from "./components/NoApps/NoApps";
+import InstalledApps from "./components/AppsComp/InstalledApps";
+import Hosting from "./components/Hosting/Hosting";
+import SubmitNewSite from "./components/Hosting/SubmitNewSite";
+import NoDomain from "./components/Domain/NoDomain";
+import Domains from "./components/Domain/Domains";
+import StorageGateway from "./components/Hosting/StorageGateway";
+import Settings from "./components/Setting/Settings";
 // React Router Dom
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-} from "react-router-dom"
-import AppDetailsPage from './components/AppDetails/AppDetailsPage'
-import DeploySite from './components/Hosting/DeploySite'
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import AppDetailsPage from "./components/AppDetails/AppDetailsPage";
+import DeploySite from "./components/Hosting/DeploySite";
 import store from "./redux/store";
 import { Provider } from "react-redux";
-import "react-loader-spinner/dist/loader/css/react-spinner-loader.css"
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 
 function App() {
   return (
@@ -54,7 +50,7 @@ function App() {
                     <NoApps />
                   </Route>
                   <Route exact path="/installedappps">
-                    <InstalledApps />
+                    {/* <InstalledApps /> */}
                   </Route>
                   <Route exact path="/hosting">
                     <Hosting />
@@ -96,4 +92,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
