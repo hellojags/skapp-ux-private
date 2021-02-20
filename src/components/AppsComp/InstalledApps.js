@@ -232,9 +232,7 @@ function InstalledApps() {
 
                 </Grid>
             </div>
-            {/* <Box paddingTop="1.2rem" paddingBottom="1rem">
-                <CustomPagination />
-            </Box> */}
+
         </Fragment>
     )
 }

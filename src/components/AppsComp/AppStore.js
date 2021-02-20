@@ -1,15 +1,27 @@
-import { Box, InputBase } from '@material-ui/core'
+import { Box, Button, InputBase } from '@material-ui/core'
 import React, { Fragment } from 'react'
 import { fade, makeStyles } from '@material-ui/core/styles'
 import SearchIcon from '@material-ui/icons/Search'
-import UtilitiesItem from './UtilitiesItem'
+// import UtilitiesItem from './UtilitiesItem'
 import ListFilter from './ListFilter'
 import SelectItem from './SelectItem'
 import SubmitBtn from './SubmitBtn'
 import AppsList from './AppsList'
 import useWindowDimensions from '../../hooks/useWindowDimensions'
 // import PerfectScrollbar from 'react-perfect-scrollbar'
-import SelectedAppsHeader from './SelectedAppsHeader'
+// import CustomPagination from './CustomPagination'
+// import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos'
+// import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+// import SelectedAppsHeader from './SelectedAppsHeader'
+import Slider from "react-slick"
+// slick slider css
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
+import SlickNextArrow from '../slickarrows/SlickNextArrow'
+import SlickPrevArrow from '../slickarrows/SlickPrevArrow'
+import Footer from '../Footer/Footer'
+// import classes from '*.module.css'
+// import InfiniteScroll from 'react-infinite-scroll-component'
 const useStyles = makeStyles(theme => (
     {
         search: {
@@ -82,7 +94,7 @@ const useStyles = makeStyles(theme => (
             fontWeight: '400'
         },
         Media1249: {
-            width: 'calc(100% - 230px)',
+            width: '50%',
             marginLeft: 'auto!important',
             marginRight: 0,
             '@media only screen and (max-width: 890px)': {
@@ -147,19 +159,35 @@ const useStyles = makeStyles(theme => (
 
     }
 ))
-function Apps() {
+
+// get div with
+function AppStore() {
     // temp var for selected page
-    const selectedPage = true
+    // const selectedPage = true
     // This page code
     const { width } = useWindowDimensions()
+
+    let showSlides = width > 1600 ? 1600 / 140 : width / 140
+    var settings = {
+        dots: false,
+        infinite: true,
+        speed: 500,
+        // slidesToShow: Math.floor(width / 140),
+        // slidesToShow: Math.floor(width / 140),
+        slidesToShow: showSlides,
+        slidesToScroll: 1,
+        nextArrow: <SlickNextArrow />,
+        prevArrow: <SlickPrevArrow />
+    }
+    // console.log(width)
     const classes = useStyles()
     const AppsComp = (<Fragment >
         <Box display="flex" className='second-nav' alignItems="center">
             <Box display="flex" alignItems="center" className={`${classes.margnBottomMediaQuery} ${classes.MobileFontStyle}`}>
-                <h1 className={classes.pageHeading}>Apps</h1>
-                <small className={classes.smallText}>120 Results</small>
+                <h1 className={classes.pageHeading}>Skapp App Store</h1>
+
             </Box>
-            {width < 1250 && <div className={`${classes.search} ${classes.Media1249} ${classes.margnBottomMediaQuery}`}>
+            {width < 1050 && <div className={`${classes.search} ${classes.Media1249} ${classes.margnBottomMediaQuery}`}>
                 <Box>
                     <div className={classes.searchIcon}>
                         <SearchIcon />
@@ -175,11 +203,9 @@ function Apps() {
                 />
             </div>}
             <Box className={classes.secondNavRow2} display="flex" alignItems="center" flex={1} justifyContent='flex-end'>
-                <Box>
-                    <UtilitiesItem />
-                </Box>
 
-                {width > 1249 && <div className={classes.search}>
+
+                {width > 1049 && <div className={classes.search}>
                     <Box>
                         <div className={classes.searchIcon}>
                             <SearchIcon />
@@ -207,22 +233,87 @@ function Apps() {
                 </Box>
             </Box>
         </Box>
-        {/* When items are selectable */}
-        {selectedPage && <SelectedAppsHeader />}
 
+        {/* <div >
+            <Button className="tagButton">
+                Art & Design (5)
+            </Button>
+        </div> */}
+        <Slider {...settings} className="appTagsButtons">
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+            <div>
+                <Button className="tagButton">
+                    Art & Design (5)
+            </Button>
+            </div>
+        </Slider>
         <div>
             <AppsList />
+            <Footer />
         </div>
-
-
     </Fragment>)
 
     return (
         // (width < 575)
         //     ? <div className={classes.mobileSave}>{AppsComp}</div>
         //     : < PerfectScrollbar className={classes.PerfectScrollbarContainer} >{AppsComp}</PerfectScrollbar>
+
         <div>{AppsComp}</div>
     )
 }
 
-export default Apps
+export default AppStore

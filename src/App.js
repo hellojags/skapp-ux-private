@@ -1,7 +1,7 @@
 import React from 'react'
 import { ThemeProvider } from '@material-ui/core'
 import Apps from './components/AppsComp/Apps'
-import Navbar from './components/Navbar/Navbar'
+// import Navbar from './components/Navbar/Navbar'
 import Sidebar from './components/Sidebar/Sidebar'
 import SubmitApp from './components/SubmitApp/SubmitApp'
 import './index.css'
@@ -23,23 +23,34 @@ import {
 } from "react-router-dom"
 import AppDetailsPage from './components/AppDetails/AppDetailsPage'
 import DeploySite from './components/Hosting/DeploySite'
+import DescoverDev from './components/DescoverDev/DescoverDev'
+import AppStore from './components/AppsComp/AppStore'
+// import LandingPageNavbar from './components/Navbar/LandingPageNavbar'
+import Login from './components/Auth/Login'
+import Nav from './components/Navbar/Nav'
 
 function App() {
   return (
     <Router>
       <ThemeProvider theme={skappTheme}>
         <div className="App">
-
-          <Navbar />
+          <Nav />
+          {/* <Navbar /> */}
+          {/* <LandingPageNavbar /> */}
           <section className="main-content">
 
             <aside className="app-sidebar">
               <Sidebar />
             </aside>
 
-            <main className="app-content">
+            <main className="app-content" id="app-content">
               <Switch>
-
+                <Route exact path='/'>
+                  <AppStore />
+                </Route>
+                <Route exact path='/descoverdev'>
+                  <DescoverDev />
+                </Route>
                 <Route exact path='/appdetail'>
                   <AppDetailsPage />
                 </Route>
@@ -85,7 +96,11 @@ function App() {
                 <Route exact path='/apps'>
                   <Apps />
                 </Route>
+                <Route exact path='/login'>
+                  <Login />
+                </Route>
               </Switch>
+
             </main>
 
           </section>

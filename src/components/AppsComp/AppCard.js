@@ -65,6 +65,23 @@ const AppCard = ({ selectable, updated }) => {
                         </Typography>
                     </CardContent>
                 </CardActionArea>
+                <Box className={`${classes.tags} tags-card`} display="flex" >
+                    <Typography variant="caption" component='span'>
+                        Add
+                        </Typography>
+                    <Typography variant="caption" component='span'>
+                        |
+                        </Typography>
+                    <Typography variant="caption" component='span'>
+                        Programms
+                        </Typography>
+                    <Typography variant="caption" component='span'>
+                        |
+                        </Typography>
+                    <Typography variant="caption" component='span'>
+                        Utilities
+                        </Typography>
+                </Box>
                 <CardActions className={`${classes.detailsArea} cardFooter`}>
                     <Box display='flex' width='100%' paddingLeft='.45rem' paddingTop="6px" alignSelf="flex-end" paddingRight='.45rem'>
                         <Box display="flex" alignItems="center" className={classes.footerItem}>
@@ -92,6 +109,7 @@ const AppCard = ({ selectable, updated }) => {
                         </Box>
                     </Box>
                 </CardActions>
+
                 <CardActions className={classes.footerBottom}>
                     <Box>
                         <Button size="medium"
@@ -102,23 +120,7 @@ const AppCard = ({ selectable, updated }) => {
                             {updated === undefined && 'Install'}
                         </Button>
                     </Box>
-                    <Box className={`${classes.tags} tags-card`} display="flex" >
-                        <Typography variant="caption" component='span'>
-                            Add
-                        </Typography>
-                        <Typography variant="caption" component='span'>
-                            |
-                        </Typography>
-                        <Typography variant="caption" component='span'>
-                            Programms
-                        </Typography>
-                        <Typography variant="caption" component='span'>
-                            |
-                        </Typography>
-                        <Typography variant="caption" component='span'>
-                            Utilities
-                        </Typography>
-                    </Box>
+
                 </CardActions>
             </Card>
         </Box >
